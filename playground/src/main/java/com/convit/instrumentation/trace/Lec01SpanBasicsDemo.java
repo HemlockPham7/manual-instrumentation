@@ -2,6 +2,7 @@ package com.convit.instrumentation.trace;
 
 import com.convit.instrumentation.CommonUtil;
 import com.convit.instrumentation.OpenTelmetryConfig;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 
 public class Lec01SpanBasicsDemo {
@@ -18,11 +19,19 @@ public class Lec01SpanBasicsDemo {
     private void processOrder() {
         var span = tracer.spanBuilder("processOrder")
                         .startSpan();
-        processPayment();
-        deductInventory();
-        sendNotification();
-
-        span.end();
+        try {
+            processPayment();
+            deductInventory();
+            sendNotification();
+            span.setAttribute("order.id", 124);
+            span.setAttribute("order.amount", 2000);
+            span.setStatus(StatusCode.OK);
+        } catch (Exception e) {
+            span.recordException(e);
+            span.setStatus(StatusCode.ERROR);
+        } finally {
+            span.end();
+        }
     }
 
     private void processPayment() {
@@ -35,5 +44,6 @@ public class Lec01SpanBasicsDemo {
 
     private void sendNotification() {
         CommonUtil.sleepMillis(100);
+//        throw new RuntimeException("IO Error");
     }
 }

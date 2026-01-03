@@ -77,7 +77,7 @@ public class OpenTelmetryConfig {
 
     private static Resource resource() {
         return Resource.create(Attributes.of(
-                AttributeKey.stringKey("service.name"), "order-service"
+                AttributeKey.stringKey("service.name"), "order-service-from-vh"
         ));
     }
 }
